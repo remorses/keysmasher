@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.1.0
+
+- Added black background for better contrast and modern look
+
+## 0.0.9
+
+- Centered typing text for balanced, aesthetically pleasing layout
+- Fixed logo to use plain "keysmasher" text instead of Unicode characters
+
+## 0.0.8
+
+- Added 1 space above stats line for better visual separation
+
+## 0.0.7
+
+- Reduced default word count from 50 to 25 words for shorter, quicker tests
+
 ## 0.0.6
 
 - Further reduced spacing between text and stats line by removing bottom padding from text box

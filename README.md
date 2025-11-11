@@ -53,7 +53,7 @@ bun run cli
 
 ## How It Works
 
-The test displays 50 random words from a common word pool. As you type:
+The test displays 25 random words from a common word pool. As you type:
 
 - Untyped characters appear in very dim gray (#333333)
 - Correctly typed characters appear in very light gray (#e0e0e0)

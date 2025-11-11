@@ -28,7 +28,7 @@ interface TypingState {
 const IDLE_THRESHOLD = 2000; // 2 seconds - pause timer if no typing for this long
 
 const useTypingStore = create<TypingState>((set, get) => ({
-  words: getRandomWords(50),
+  words: getRandomWords(25),
   currentIndex: 0,
   inputText: "",
   errors: new Set(),
@@ -41,7 +41,7 @@ const useTypingStore = create<TypingState>((set, get) => ({
   pausedTime: 0,
   pauseStartTime: null,
   resetTest: () => set({
-    words: getRandomWords(50),
+    words: getRandomWords(40),
     currentIndex: 0,
     inputText: "",
     errors: new Set(),
@@ -63,11 +63,11 @@ const useTypingStore = create<TypingState>((set, get) => ({
   recordKeyPress: () => {
     const now = Date.now();
     const state = get();
-    
+
     // If we were paused, add the pause duration to total paused time
     if (state.pauseStartTime !== null) {
       const pauseDuration = now - state.pauseStartTime;
-      set({ 
+      set({
         pausedTime: state.pausedTime + pauseDuration,
         pauseStartTime: null,
         lastKeyPressTime: now
@@ -82,7 +82,7 @@ export function TypingTest() {
   const { width, height } = useTerminalDimensions();
   const [currentTime, setCurrentTime] = React.useState(Date.now());
   const textareaRef = React.useRef<TextareaRenderable>(null);
-  
+
   const words = useTypingStore((s) => s.words);
   const currentIndex = useTypingStore((s) => s.currentIndex);
   const inputText = useTypingStore((s) => s.inputText);
@@ -104,15 +104,15 @@ export function TypingTest() {
       const interval = setInterval(() => {
         const now = Date.now();
         setCurrentTime(now);
-        
+
         // Check if user has been idle for too long
         const state = useTypingStore.getState();
         if (state.lastKeyPressTime && !state.pauseStartTime) {
           const idleTime = now - state.lastKeyPressTime;
           if (idleTime >= IDLE_THRESHOLD) {
             // Start pause timer
-            useTypingStore.setState({ 
-              pauseStartTime: state.lastKeyPressTime + IDLE_THRESHOLD 
+            useTypingStore.setState({
+              pauseStartTime: state.lastKeyPressTime + IDLE_THRESHOLD
             });
           }
         }
@@ -152,10 +152,10 @@ export function TypingTest() {
         if (key.option) {
           let newText = state.inputText;
           const originalLength = newText.length;
-          
+
           // Trim trailing spaces first
           newText = newText.trimEnd();
-          
+
           // Find the last space or beginning of string
           const lastSpaceIndex = newText.lastIndexOf(" ");
           if (lastSpaceIndex >= 0) {
@@ -163,14 +163,14 @@ export function TypingTest() {
           } else {
             newText = "";
           }
-          
+
           // Remove all error markers for deleted characters
           const newErrors = new Set(state.errors);
           for (let i = newText.length; i < originalLength; i++) {
             newErrors.delete(i);
           }
-          
-          useTypingStore.setState({ 
+
+          useTypingStore.setState({
             inputText: newText,
             currentIndex: newText.length,
             errors: newErrors
@@ -180,12 +180,12 @@ export function TypingTest() {
           // Regular backspace: delete one character
           const deletedIndex = state.inputText.length - 1;
           const newText = state.inputText.slice(0, -1);
-          
+
           // Remove error if the deleted character was marked as error
           const newErrors = new Set(state.errors);
           newErrors.delete(deletedIndex);
-          
-          useTypingStore.setState({ 
+
+          useTypingStore.setState({
             inputText: newText,
             currentIndex: newText.length,
             errors: newErrors
@@ -201,7 +201,7 @@ export function TypingTest() {
       const newIndex = state.currentIndex;
       const expectedChar = fullText[newIndex];
       const newText = state.inputText + key.sequence;
-      
+
       let newCorrectChars = state.correctChars;
       let newTotalChars = state.totalCharsTyped + 1;
 
@@ -217,7 +217,7 @@ export function TypingTest() {
         totalCharsTyped: newTotalChars,
         correctChars: newCorrectChars,
       });
-      
+
       state.recordKeyPress();
 
       // Check if finished
@@ -232,12 +232,12 @@ export function TypingTest() {
   if (startTime) {
     const rawElapsed = (endTime || currentTime) - startTime;
     let totalPausedTime = pausedTime;
-    
+
     // Add current pause if we're paused right now
     if (pauseStartTime && !endTime) {
       totalPausedTime += currentTime - pauseStartTime;
     }
-    
+
     elapsedTime = rawElapsed - totalPausedTime;
   }
   const elapsedSeconds = elapsedTime / 1000;
@@ -247,15 +247,15 @@ export function TypingTest() {
   // Render the text with colors
   const renderText = () => {
     const chars: React.ReactNode[] = [];
-    
+
     for (let i = 0; i < fullText.length; i++) {
       const char = fullText[i];
       const isTyped = i < inputText.length;
       const isError = errors.has(i);
       const isCurrent = i === currentIndex;
-      
+
       let fg = "#333333"; // untyped (very dim)
-      
+
       if (isTyped) {
         if (isError) {
           fg = "#ff6b6b"; // error (red)
@@ -263,7 +263,7 @@ export function TypingTest() {
           fg = "#e0e0e0"; // typed correctly (very light gray)
         }
       }
-      
+
       if (isCurrent) {
         // Show cursor with bright color
         chars.push(
@@ -279,7 +279,7 @@ export function TypingTest() {
         );
       }
     }
-    
+
     return chars;
   };
 
@@ -287,15 +287,16 @@ export function TypingTest() {
   if (isFinished) {
     const finalWPM = calculateWPM(correctChars, (endTime! - startTime!) / 1000);
     const finalAccuracy = calculateAccuracy(correctChars, totalCharsTyped);
-    
+
     return (
-      <box style={{ 
-        flexDirection: "column", 
-        height: "100%",
-        justifyContent: "center",
-        alignItems: "center"
-      }}>
-        <box style={{ 
+    <box style={{ 
+      flexDirection: "column", 
+      height: "100%",
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "#000000"
+    }}>
+        <box style={{
           flexDirection: "column",
           alignItems: "center",
           border: true,
@@ -306,29 +307,29 @@ export function TypingTest() {
           <text style={{ fg: "#51cf66", marginBottom: 2 }}>
             <strong>Test Complete!</strong>
           </text>
-          
+
           <box style={{ flexDirection: "column", gap: 1, marginBottom: 2 }}>
             <text>
               <span style={{ fg: "#ffd43b" }}>WPM: </span>
               <strong style={{ fg: "#ffffff" }}>{finalWPM}</strong>
             </text>
-            
+
             <text>
               <span style={{ fg: "#ffd43b" }}>Accuracy: </span>
               <strong style={{ fg: "#ffffff" }}>{finalAccuracy}%</strong>
             </text>
-            
+
             <text>
               <span style={{ fg: "#ffd43b" }}>Time: </span>
               <strong style={{ fg: "#ffffff" }}>{elapsedSeconds.toFixed(1)}s</strong>
             </text>
-            
+
             <text>
               <span style={{ fg: "#ffd43b" }}>Characters: </span>
               <strong style={{ fg: "#ffffff" }}>{correctChars}/{totalCharsTyped}</strong>
             </text>
           </box>
-          
+
           <text style={{ fg: "#868e96", marginTop: 1 }}>
             Press <strong>Enter</strong> to try again
           </text>
@@ -339,25 +340,26 @@ export function TypingTest() {
 
   // Calculate text wrapping
   const maxTextWidth = Math.min(width - 8, 80);
-  
+
   return (
-    <box style={{ 
-      flexDirection: "column", 
+    <box style={{
+      flexDirection: "column",
       height: "100%",
       justifyContent: "center",
       alignItems: "center"
     }}>
       {/* Main typing area - centered */}
-      <box style={{ 
+      <box style={{
         flexDirection: "column",
         alignItems: "center"
       }}>
-        <box style={{ 
+        <box style={{
           width: maxTextWidth,
           paddingLeft: 2,
           paddingRight: 2,
           paddingTop: 2,
-          paddingBottom: 0
+          paddingBottom: 0,
+          justifyContent: "center"
         }}>
           <text style={{ flexWrap: "wrap" }}>
             {renderText()}
@@ -365,9 +367,9 @@ export function TypingTest() {
         </box>
 
         {/* Stats bar - row layout with minWidth to prevent layout shift */}
-        <box style={{ flexDirection: "row", alignItems: "center", marginTop: 0 }}>
+        <box style={{ flexDirection: "row", alignItems: "center", marginTop: 1 }}>
           <box style={{ minWidth: 10 }}>
-            <text style={{ fg: "#666666" }}>keysmasher</text>
+            <text style={{ fg: "#666666" }}>𝐤𝐞𝐲𝐬𝐦 𝐚𝐬𝐡𝐞𝐫</text>
           </box>
           <text style={{ fg: "#666666" }}>  •  </text>
           <box style={{ minWidth: 7 }}>

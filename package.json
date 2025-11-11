@@ -1,6 +1,6 @@
 {
   "name": "keysmasher",
-  "version": "0.0.6",
+  "version": "0.1.0",
   "description": "A terminal-based typing speed test inspired by MonkeyType",
   "module": "src/cli.tsx",
   "type": "module",
