@@ -1,10 +1,12 @@
 import * as React from "react";
 import { useKeyboard, useTerminalDimensions } from "@opentui/react";
 import { create } from "zustand";
-import { getRandomWords, calculateWPM, calculateAccuracy } from "./utils.ts";
+import { getRandomWords, calculateWPM, calculateAccuracy, WORDS_PER_TEST } from "./utils.ts";
 
 interface TypingState {
-  words: string[];
+  contentPages: string[][]; // Array of word groups
+  currentPageIndex: number;
+  words: string[]; // Current page words
   inputText: string;
   errors: Set<number>;
   startTime: number | null;
@@ -15,6 +17,7 @@ interface TypingState {
   lastKeyPressTime: number | null;
   pausedTime: number;
   pauseStartTime: number | null;
+  initializeContent: (pages: string[][]) => void;
   resetTest: () => void;
   setInputText: (text: string) => void;
   addError: (index: number) => void;
@@ -26,8 +29,10 @@ interface TypingState {
 const IDLE_THRESHOLD = 2000; // 2 seconds - pause timer if no typing for this long
 const LOGO = "𝐤𝐞𝐲𝐬𝐦 𝐚𝐬𝐡𝐞𝐫";
 
-const useTypingStore = create<TypingState>((set, get) => ({
-  words: getRandomWords(25),
+export const useTypingStore = create<TypingState>((set, get) => ({
+  contentPages: [getRandomWords(WORDS_PER_TEST)],
+  currentPageIndex: 0,
+  words: getRandomWords(WORDS_PER_TEST),
   inputText: "",
   errors: new Set(),
   startTime: null,
@@ -38,19 +43,41 @@ const useTypingStore = create<TypingState>((set, get) => ({
   lastKeyPressTime: null,
   pausedTime: 0,
   pauseStartTime: null,
-  resetTest: () => set({
-    words: getRandomWords(40),
-    inputText: "",
-    errors: new Set(),
-    startTime: null,
-    endTime: null,
-    isFinished: false,
-    totalCharsTyped: 0,
-    correctChars: 0,
-    lastKeyPressTime: null,
-    pausedTime: 0,
-    pauseStartTime: null,
-  }),
+  initializeContent: (pages: string[][]) => {
+    set({
+      contentPages: pages,
+      currentPageIndex: 0,
+      words: pages[0] || [],
+      inputText: "",
+      errors: new Set(),
+      startTime: null,
+      endTime: null,
+      isFinished: false,
+      totalCharsTyped: 0,
+      correctChars: 0,
+      lastKeyPressTime: null,
+      pausedTime: 0,
+      pauseStartTime: null,
+    });
+  },
+  resetTest: () => {
+    const state = get();
+    const nextIndex = (state.currentPageIndex + 1) % state.contentPages.length;
+    set({
+      currentPageIndex: nextIndex,
+      words: state.contentPages[nextIndex] || [],
+      inputText: "",
+      errors: new Set(),
+      startTime: null,
+      endTime: null,
+      isFinished: false,
+      totalCharsTyped: 0,
+      correctChars: 0,
+      lastKeyPressTime: null,
+      pausedTime: 0,
+      pauseStartTime: null,
+    });
+  },
   setInputText: (text: string) => set({ inputText: text }),
   addError: (index: number) => set((state) => ({
     errors: new Set([...state.errors, index])
@@ -80,7 +107,7 @@ export function TypingTest() {
   const [currentTime, setCurrentTime] = React.useState(Date.now());
 
   const state = useTypingStore();
-  const { words, inputText, errors, startTime, endTime, isFinished, totalCharsTyped, correctChars, pausedTime, pauseStartTime } = state;
+  const { words, inputText, errors, startTime, endTime, isFinished, totalCharsTyped, correctChars, pausedTime, pauseStartTime, currentPageIndex, contentPages: storeContentPages } = state;
 
   const fullText = words.join(" ");
   const currentIndex = inputText.length;
@@ -372,6 +399,14 @@ export function TypingTest() {
           <box style={{ minWidth: 6 }}>
             <text style={{ fg: "#666666" }}>{elapsedSeconds.toFixed(1)}s</text>
           </box>
+          {storeContentPages.length > 1 && (
+            <>
+              <text style={{ fg: "#666666" }}>  •  </text>
+              <box style={{ minWidth: 7 }}>
+                <text style={{ fg: "#666666" }}>{currentPageIndex + 1}/{storeContentPages.length}</text>
+              </box>
+            </>
+          )}
         </box>
       </box>
     </box>

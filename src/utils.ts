@@ -1,3 +1,5 @@
+export const WORDS_PER_TEST = 25;
+
 export function getRandomWords(count: number): string[] {
   const words = [
     "the", "be", "to", "of", "and", "a", "in", "that", "have", "I",
@@ -41,4 +43,19 @@ export function calculateWPM(correctChars: number, timeInSeconds: number): numbe
 export function calculateAccuracy(correctChars: number, totalChars: number): number {
   if (totalChars === 0) return 100;
   return Math.round((correctChars / totalChars) * 100);
+}
+
+export function splitIntoWordGroups(text: string, wordsPerGroup: number): string[][] {
+  // Normalize whitespace: replace all whitespace (newlines, tabs, multiple spaces) with single spaces
+  const normalizedText = text.replace(/\s+/g, ' ').trim();
+  
+  // Split by space and filter out empty strings
+  const words = normalizedText.split(' ').filter(word => word.length > 0);
+  
+  const groups: string[][] = [];
+  for (let i = 0; i < words.length; i += wordsPerGroup) {
+    groups.push(words.slice(i, i + wordsPerGroup));
+  }
+  
+  return groups.filter(group => group.length > 0);
 }
