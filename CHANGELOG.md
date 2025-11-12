@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.1
+
+### UI Improvements
+- Changed typed text color to bright green (#85e89d) for better visual feedback
+- Improved untyped text rendering - now uses base syntax highlighting colors without opacity adjustment
+- Updated fallback colors: untyped text now uses lighter gray (#aaa) for better contrast
+
 ## 0.2.0
 
 ### Features

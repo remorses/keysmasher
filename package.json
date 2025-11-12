@@ -1,6 +1,6 @@
 {
   "name": "keysmasher",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A terminal-based typing speed test inspired by MonkeyType",
   "repository": {
     "type": "git",
