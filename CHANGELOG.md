@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.1.7
+
+### UI Improvements
+- Enhanced block cursor with yellow/gold color (#ffd43b) for better visibility
+- Cursor now shows at end of text when all characters are typed
+- Improved cursor visibility during typing with more prominent background color
+
+## 0.1.6
+
+### UI Improvements
+- Changed cursor from underline to block style for better visibility
+- Cursor now displays as solid white block with black text instead of underline
+
 ## 0.1.5
 
 ### Code Quality

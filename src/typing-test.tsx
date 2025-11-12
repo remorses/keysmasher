@@ -240,15 +240,13 @@ export function TypingTest() {
       const isError = errors.has(i);
       const isCurrent = i === currentIndex;
 
-      // Only show underline for cursor position, never for typed characters
+      // Only show block background for cursor position, never for typed characters
       if (isCurrent) {
-        // Show cursor with underline decoration (next character to type)
+        // Show cursor with block background (next character to type)
         chars.push(
-          <u key={i}>
-            <span style={{ fg: "#ffffff" }}>
-              {char}
-            </span>
-          </u>
+          <span key={i} style={{ fg: "#000000", bg: "#ffd43b" }}>
+            {char}
+          </span>
         );
       } else {
         // All other characters (typed or untyped) have transparent background
@@ -268,6 +266,15 @@ export function TypingTest() {
           </span>
         );
       }
+    }
+
+    // Add cursor at the end if we've typed all characters
+    if (currentIndex >= fullText.length) {
+      chars.push(
+        <span key={fullText.length} style={{ fg: "#000000", bg: "#ffd43b" }}>
+          {" "}
+        </span>
+      );
     }
 
     return chars;
