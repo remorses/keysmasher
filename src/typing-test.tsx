@@ -91,7 +91,7 @@ export const useTypingStore = create<TypingState>((set, get) => ({
       words = newWords;
     } else {
       currentPageIndex = (currentPageIndex + 1) % contentPages.length;
-      words = contentPages[currentPageIndex]!;
+      words = contentPages[currentPageIndex] || [];
     }
 
     set({
