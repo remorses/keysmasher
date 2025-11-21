@@ -82,10 +82,22 @@ export const useTypingStore = create<TypingState>((set, get) => ({
   },
   resetTest: () => {
     const state = get();
-    const nextIndex = (state.currentPageIndex + 1) % state.contentPages.length;
+    let { contentPages, currentPageIndex, words } = state;
+
+    if (!state.language) {
+      const newWords = getRandomWords(WORDS_PER_TEST);
+      currentPageIndex = 0;
+      contentPages = [newWords];
+      words = newWords;
+    } else {
+      currentPageIndex = (currentPageIndex + 1) % contentPages.length;
+      words = contentPages[currentPageIndex]!;
+    }
+
     set({
-      currentPageIndex: nextIndex,
-      words: state.contentPages[nextIndex] || [],
+      currentPageIndex,
+      words,
+      contentPages,
       inputText: "",
       errors: new Set(),
       startTime: null,
